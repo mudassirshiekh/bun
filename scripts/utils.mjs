@@ -2513,6 +2513,11 @@ export function printEnvironment() {
     console.log("Username:", getUsername());
     console.log("Working Directory:", process.cwd());
     console.log("Temporary Directory:", tmpdir());
+    if (process.isBun) {
+      console.log("Bun Version:", Bun.version, Bun.revision);
+    } else {
+      console.log("Node Version:", process.version);
+    }
   });
   if (isPosix) {
     startGroup("ulimit -a", () => {
@@ -2525,6 +2530,10 @@ export function printEnvironment() {
       for (const [key, value] of Object.entries(process.env)) {
         console.log(`${key}:`, value);
       }
+    });
+
+    startGroup("Limits", () => {
+      spawnSync("ulimit", ["-a"], { stdio: "inherit" });
     });
   }
 
@@ -2547,7 +2556,7 @@ export function printEnvironment() {
     startGroup("CI", () => {
       console.log("Build ID:", getBuildId());
       console.log("Build Label:", getBuildLabel());
-      console.log("Build URL:", `${getBuildUrl()}`);
+      console.log("Build URL:", getBuildUrl()?.toString());
     });
   }
 }
