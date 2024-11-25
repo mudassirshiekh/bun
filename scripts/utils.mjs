@@ -2533,7 +2533,7 @@ export function printEnvironment() {
     });
 
     startGroup("Limits", () => {
-      spawnSync("ulimit", ["-a"], { stdio: "inherit" });
+      spawnSync(["ulimit", "-a"], { stdio: "inherit" });
     });
   }
 
