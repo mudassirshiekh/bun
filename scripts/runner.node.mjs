@@ -27,6 +27,7 @@ import {
   getBuildUrl,
   getEnv,
   getFileUrl,
+  getLoggedInUserCount,
   getWindowsExitReason,
   isBuildkite,
   isCI,
@@ -1443,6 +1444,25 @@ export async function main() {
   printEnvironment();
   const results = await runTests();
   const ok = results.every(({ ok }) => ok);
+
+  let waitForUser = false;
+  while (isCI) {
+    const userCount = getLoggedInUserCount();
+    if (!userCount) {
+      if (waitForUser) {
+        console.log("No users logged in, exiting runner...");
+      }
+      break;
+    }
+
+    if (!waitForUser) {
+      console.warn(`Found ${userCount} users logged in, keeping the runner alive until logout...`);
+      waitForUser = true;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 60_000));
+  }
+
   process.exit(getExitCode(ok ? "pass" : "fail"));
 }
 
