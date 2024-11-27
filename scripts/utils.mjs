@@ -1083,6 +1083,9 @@ export function getBuildLabel() {
  * @returns {boolean | undefined}
  */
 export function isBuildManual() {
+  // DEBUG
+  return true;
+
   if (isBuildkite) {
     const buildSource = getEnv("BUILDKITE_SOURCE", false);
     if (buildSource) {
