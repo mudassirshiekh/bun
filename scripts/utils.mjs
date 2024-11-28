@@ -452,7 +452,7 @@ export function parseGitUrl(url) {
 export function getRepositoryUrl(cwd) {
   if (!cwd) {
     if (isBuildkite) {
-      const repository = getEnv("BUILDKITE_PULL_REQUEST_REPO", false) || getEnv("BUILDKITE_REPO", false);
+      const repository = getEnv("BUILDKITE_REPO", false);
       if (repository) {
         return parseGitUrl(repository);
       }
@@ -492,6 +492,21 @@ export function getRepository(cwd) {
     const { hostname, pathname } = new URL(url);
     if (hostname == "github.com") {
       return pathname.slice(1);
+    }
+  }
+}
+
+/**
+ * @returns {string | undefined}
+ */
+export function getPullRequestRepository() {
+  if (isBuildkite) {
+    const repository = getEnv("BUILDKITE_PULL_REQUEST_REPO", false);
+    if (repository) {
+      const { hostname, pathname } = parseGitUrl(repository);
+      if (hostname == "github.com") {
+        return pathname.slice(1);
+      }
     }
   }
 }
@@ -586,7 +601,7 @@ export function getBranch(cwd) {
 
 /**
  * @param {string} [cwd]
- * @returns {string}
+ * @returns {string | undefined}
  */
 export function getMainBranch(cwd) {
   if (!cwd) {
@@ -1101,9 +1116,6 @@ export function getBuildLabel() {
  * @returns {boolean | undefined}
  */
 export function isBuildManual() {
-  // DEBUG
-  return true;
-
   if (isBuildkite) {
     const buildSource = getEnv("BUILDKITE_SOURCE", false);
     if (buildSource) {
