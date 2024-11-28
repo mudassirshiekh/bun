@@ -42,6 +42,7 @@ bunx cowsay 'Hello, world!'   # execute a package
 ```
 
 ## Install
+## By Mudassir Alam
 
 Bun supports Linux (x64 & arm64), macOS (x64 & Apple Silicon) and Windows (x64).
 
